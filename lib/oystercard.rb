@@ -13,10 +13,6 @@ class Oystercard
     @balance += value
   end
 
-  def deduct(value)
-    @balance -= value
-  end
-
   def in_journey?
     return @in_journey
   end
@@ -27,7 +23,15 @@ class Oystercard
   end
 
   def touch_out
+    deduct(MIN_JOURNEY_BALANCE)
     @in_journey = false
+  end
+
+  private
+
+
+  def deduct(value)
+    @balance -= value
   end
 
 end

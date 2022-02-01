@@ -1,6 +1,8 @@
 require_relative '../lib/oystercard'
 
 describe Oystercard do
+  let(:min_journey_balance) {Oystercard::MIN_JOURNEY_BALANCE}
+  let(:max_card_balance) {Oystercard::MAX_CARD_BALANCE}
   
   it "has a balance of 0 upon initialization" do
     expect(subject.balance).to eq 0
@@ -10,28 +12,24 @@ describe Oystercard do
     it { is_expected.to respond_to(:top_up).with(1).argument }
   
     it "tops up the balance with the argument balance provided" do
-      min_journey_balance = Oystercard::MIN_JOURNEY_BALANCE
 
       expect {subject.top_up min_journey_balance}.to change {subject.balance}.by(min_journey_balance)
     end
 
-    it 'does not allow a total balance of more than max_limit' do
-      max_limit = Oystercard::MAX_CARD_BALANCE
-      subject.top_up(max_limit)
+    it 'does not allow a total balance of more than max_card_balance' do
+      subject.top_up(max_card_balance)
 
-      expect {subject.top_up 1}.to raise_error "You can not have more than #{max_limit} in your balance"
+      expect {subject.top_up 1}.to raise_error "You can not have more than #{max_card_balance} in your balance"
     end
   end
 
 
   describe "#deduct" do
     
-    it { is_expected.to respond_to(:deduct).with(1).argument }
 
     it "should deduct value from our balance" do
-      min_journey_balance = Oystercard::MIN_JOURNEY_BALANCE
       subject.top_up(min_journey_balance)
-      expect { subject.deduct min_journey_balance}.to change {subject.balance}.by(-min_journey_balance)
+      expect { subject.touch_out }.to change {subject.balance}.by(-min_journey_balance)
     end
 
   end
@@ -44,7 +42,7 @@ describe Oystercard do
 
   describe "#touch_in" do
     it 'should allow oyster to touch in' do
-      subject.top_up(Oystercard::MIN_JOURNEY_BALANCE)
+      subject.top_up(min_journey_balance)
       subject.touch_in
       expect(subject).to be_in_journey
     end
@@ -56,10 +54,17 @@ describe Oystercard do
 
   describe "#touch_out" do
     it 'should allow oyster to touch out' do
-      subject.top_up(Oystercard::MAX_CARD_BALANCE)
+      subject.top_up(max_card_balance)
       subject.touch_in
       subject.touch_out
       expect(subject).not_to be_in_journey
+    end
+
+    it 'reduces balance by journey fare' do
+      subject.top_up(max_card_balance)
+      subject.touch_in
+      subject.touch_out
+      expect { subject.touch_out }.to change{ subject.balance }.by (-min_journey_balance)
     end
   end
 end
