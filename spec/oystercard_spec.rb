@@ -10,23 +10,28 @@ describe Oystercard do
     it { is_expected.to respond_to(:top_up).with(1).argument }
   
     it "tops up the balance with the argument balance provided" do
-      expect {subject.top_up 5}.to change {subject.balance}.by(5)
+      min_journey_balance = Oystercard::MIN_JOURNEY_BALANCE
+
+      expect {subject.top_up min_journey_balance}.to change {subject.balance}.by(min_journey_balance)
     end
 
-    it 'does not allow a total balance of more than 90' do
-      max_limit = Oystercard::MAX_LIMIT
+    it 'does not allow a total balance of more than max_limit' do
+      max_limit = Oystercard::MAX_CARD_BALANCE
       subject.top_up(max_limit)
-      expect {subject.top_up 1}.to raise_error "You can not have more than 90 in your balance"
+
+      expect {subject.top_up 1}.to raise_error "You can not have more than #{max_limit} in your balance"
     end
   end
+
 
   describe "#deduct" do
     
     it { is_expected.to respond_to(:deduct).with(1).argument }
 
     it "should deduct value from our balance" do
-      subject.top_up(10)
-      expect { subject.deduct 10}.to change {subject.balance}.by(-10)
+      min_journey_balance = Oystercard::MIN_JOURNEY_BALANCE
+      subject.top_up(min_journey_balance)
+      expect { subject.deduct min_journey_balance}.to change {subject.balance}.by(-min_journey_balance)
     end
 
   end
@@ -39,13 +44,19 @@ describe Oystercard do
 
   describe "#touch_in" do
     it 'should allow oyster to touch in' do
+      subject.top_up(Oystercard::MIN_JOURNEY_BALANCE)
       subject.touch_in
       expect(subject).to be_in_journey
+    end
+
+    it 'should not allow touch in if balance is below minimum' do
+      expect {subject.touch_in}.to raise_error "Insufficent funds"
     end
   end
 
   describe "#touch_out" do
     it 'should allow oyster to touch out' do
+      subject.top_up(Oystercard::MAX_CARD_BALANCE)
       subject.touch_in
       subject.touch_out
       expect(subject).not_to be_in_journey
