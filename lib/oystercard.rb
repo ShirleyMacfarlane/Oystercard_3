@@ -1,4 +1,5 @@
 class Oystercard
+  # hello SHirley
   attr_reader :balance, :entry_station, :exit_station, :journey
   MAX_CARD_BALANCE = 90
   MIN_JOURNEY_BALANCE = 1
