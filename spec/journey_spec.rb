@@ -31,4 +31,10 @@ describe Journey do
         expect(journey.complete?).to eq false
     end
 
+
+    # it 'calculates a fare' do
+    #     journey = Journey.new("Victoria", "Green Park")
+    #     expect(journey.calc_fare).to eq 1
+    # end
+
 end

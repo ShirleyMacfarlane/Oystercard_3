@@ -44,6 +44,12 @@ describe Oystercard do
     it 'should return false' do
       expect(subject).not_to be_in_journey
     end
+    it 'should return true' do
+      subject.top_up(min_journey_balance)
+      subject.touch_in(entry_station)
+      expect(subject).to be_in_journey
+      # expect(subject).not_to be_in_journey
+    end
   end
 
 
@@ -61,7 +67,8 @@ describe Oystercard do
     it 'should register an entry station' do
       subject.top_up(min_journey_balance)
       subject.touch_in(entry_station)
-      expect(subject.entry_station).to eq entry_station
+      # CORRECTION HERE BELOW
+      expect(subject.journey.entry_station).to eq entry_station
     end
 
   end
@@ -79,14 +86,31 @@ describe Oystercard do
       subject.top_up(max_card_balance)
       subject.touch_in(entry_station)
       subject.touch_out(exit_station)
-      expect(subject.entry_station).to eq nil
+      # expect(subject.entry_station).to eq nil
+      # CHANGES HERE BELOW
+      expect(subject.journey).to eq nil
     end
 
     it 'reduces balance by journey fare' do
       subject.top_up(max_card_balance)
       subject.touch_in(entry_station)
-      subject.touch_out(exit_station)
+      # CHANGES HERE!! 
+      #subject.touch_out(exit_station)
       expect { subject.touch_out(exit_station) }.to change{ subject.balance }.by (-min_journey_balance)
+    end
+
+    # CHANGES New tests here
+    it 'stores the journey in the list of journey' do
+      subject.top_up(max_card_balance)
+      subject.touch_in(entry_station)
+      expect(subject.journeys.length).to eq 0
+      subject.touch_out(exit_station)
+      expect(subject.journeys.length).to eq 1
+    end
+    it 'stores the journey in the list of journey' do
+      subject.top_up(max_card_balance)
+      subject.touch_in(entry_station)
+      expect { subject.touch_out(exit_station) }.to change{ subject.journeys.length }.by (1)
     end
 
     # it 'should register an exit station' do

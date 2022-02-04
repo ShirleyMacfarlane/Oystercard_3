@@ -1,13 +1,11 @@
-class Oystercard
-  # hello SHirley
-  attr_reader :balance, :entry_station, :exit_station, :journey
+class Oystercard 
+  attr_reader :balance, :journey, :journeys
   MAX_CARD_BALANCE = 90
   MIN_JOURNEY_BALANCE = 1
 
   def initialize
     @balance = 0
-    @entry_station = nil
-    #@journeys = []
+    @journeys = []
     @journey = nil
   end
 
@@ -17,33 +15,26 @@ class Oystercard
   end
 
   def in_journey?
-    #@entry_station != nil
-    !!entry_station
-    #@journey[:entry_station] != nil
-
+    !!@journey && !!@journey.entry_station
   end
 
   def touch_in(station)
     fail "Insufficent funds" if balance < MIN_JOURNEY_BALANCE
      @journey = Journey.new(station, nil)
-     @in_journey = true
-     @entry_station = station
-    # @journey[:entry_station] = station
   end
 
   def touch_out(station)
     deduct(MIN_JOURNEY_BALANCE)
     @journey.exit_station =  station
-    #@journey[:exit_station] = station
-    @entry_station = nil
+    current_journey = {entry_station: @journey.entry_station, exit_station: @journey.exit_station}
+    @journeys.push(current_journey)
+    @journey = nil
   end
 
-
   private
-
   def deduct(value)
     @balance -= value
   end
 
-
 end
+
