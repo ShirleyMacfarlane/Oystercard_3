@@ -34,6 +34,7 @@ describe Oystercard do
     
     it "should deduct value from our balance" do
       subject.top_up(min_journey_balance)
+      subject.touch_in("Victoria")
       expect { subject.touch_out(exit_station) }.to change {subject.balance}.by(-min_journey_balance)
     end
 
@@ -98,15 +99,15 @@ describe Oystercard do
   end
 
 
-  it 'should initialize an empty journey' do
-    expect(subject.journey).to be_empty
-  end
+  # it 'should initialize an empty journey' do
+  #   expect(subject.journey).to be_empty
+  # end
 
-  it 'should store one journey' do
-    subject.top_up(min_journey_balance)
-    subject.touch_in(entry_station)
-    subject.touch_out(exit_station)
-    expect(subject.journey).to eq journey
-  end
+  # it 'should store one journey' do
+  #   subject.top_up(min_journey_balance)
+  #   subject.touch_in(entry_station)
+  #   subject.touch_out(exit_station)
+  #   expect(subject.journey).to eq journey
+  # end
 
 end
