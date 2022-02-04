@@ -1,4 +1,5 @@
 require_relative '../lib/oystercard'
+require_relative '../lib/journey'
 
 describe Oystercard do
   let(:min_journey_balance) {Oystercard::MIN_JOURNEY_BALANCE}
